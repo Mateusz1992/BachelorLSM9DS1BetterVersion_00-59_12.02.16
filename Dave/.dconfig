@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ProjectConfig>
+    <CodeGenerate>
+        <JETFileMap/>
+    </CodeGenerate>
+    <ResourceReserve/>
+    <Solver>
+        <SolverBndMap>
+            <BindMap MUri="peripheral/scu/0/rstctrl/0/dsdreset" Proxy="app/reset001/0/dsdreset"/>
+            <BindMap MUri="peripheral/scu/0/rtcclksel" Proxy="app/clk001/0/rtcclksel"/>
+            <BindMap MUri="peripheral/scu/0/clkctrl/0/sys" Proxy="app/clk001/0/sys"/>
+            <BindMap MUri="peripheral/scu/0/clkctrl/0/perbridge" Proxy="app/clk001/0/perbridge"/>
+            <BindMap MUri="peripheral/scu/0/rstctrl/0/usbreset" Proxy="app/reset001/0/usbreset"/>
+            <BindMap MUri="peripheral/scu/0/rstctrl/0/mmcreset" Proxy="app/reset001/0/mmcreset"/>
+            <BindMap MUri="peripheral/cpu/0/systick" Proxy="app/systm001/0/syst"/>
+            <BindMap MUri="port/p/5/pad/2" Proxy="app/i2c001/0/i2c_scl"/>
+            <BindMap MUri="peripheral/scu/0/clkctrl/0/ccu" Proxy="app/clk001/0/ccu"/>
+            <BindMap MUri="peripheral/scu/0/clkctrl/0/pll" Proxy="app/clk001/0/pll"/>
+            <BindMap MUri="peripheral/scu/0/clkctrl/0/usb" Proxy="app/clk001/0/usb"/>
+            <BindMap MUri="peripheral/scu/0/rstctrl/0/ccu8reset/1" Proxy="app/reset001/0/ccu8reset1"/>
+            <BindMap MUri="peripheral/scu/0/rstctrl/0/dacreset" Proxy="app/reset001/0/dacreset"/>
+            <BindMap MUri="peripheral/scu/0/rstctrl/0/mcanreset" Proxy="app/reset001/0/mcanreset"/>
+            <BindMap MUri="peripheral/scu/0/rstctrl/0/ccu8reset/0" Proxy="app/reset001/0/ccu8reset0"/>
+            <BindMap MUri="peripheral/scu/0/rstctrl/0/ccu4reset/2" Proxy="app/reset001/0/ccu4reset2"/>
+            <BindMap MUri="peripheral/scu/0/rstctrl/0/ccu4reset/3" Proxy="app/reset001/0/ccu4reset3"/>
+            <BindMap MUri="peripheral/scu/0/rstctrl/0/pportreset" Proxy="app/reset001/0/pportreset"/>
+            <BindMap MUri="peripheral/scu/0/rstctrl/0/ledtsreset" Proxy="app/reset001/0/ledtsreset"/>
+            <BindMap MUri="peripheral/scu/0/rstctrl/0/rcurst" Proxy="app/reset001/0/rcurst"/>
+            <BindMap MUri="peripheral/cpu/0/nvic/interrupt/64" Proxy="app/nvic002/0/nvicnode"/>
+            <BindMap MUri="peripheral/scu/0/rstctrl/0/ebureset" Proxy="app/reset001/0/ebureset"/>
+            <BindMap MUri="peripheral/scu/0/rstctrl/0/usicreset/2" Proxy="app/reset001/0/usicreset2"/>
+            <BindMap MUri="peripheral/scu/0/rstctrl/0/usicreset/1" Proxy="app/reset001/0/usicreset1"/>
+            <BindMap MUri="peripheral/scu/0/rstctrl/0/wdtreset" Proxy="app/reset001/0/wdtreset"/>
+            <BindMap MUri="peripheral/scu/0/rstctrl/0/usicreset/0" Proxy="app/reset001/0/usicreset0"/>
+            <BindMap MUri="peripheral/scu/0/rstctrl/0/ethreset" Proxy="app/reset001/0/ethreset"/>
+            <BindMap MUri="peripheral/scu/0/rstctrl/0/posifreset/1" Proxy="app/reset001/0/posifreset1"/>
+            <BindMap MUri="peripheral/scu/0/rstctrl/0/posifreset/0" Proxy="app/reset001/0/posifreset0"/>
+            <BindMap MUri="peripheral/scu/0/clkctrl/0/sdmmc" Proxy="app/clk001/0/mmc"/>
+            <BindMap MUri="peripheral/scu/0/clkctrl/0/cpu" Proxy="app/clk001/0/cpu"/>
+            <BindMap MUri="peripheral/scu/0/pwrctrl/0/hibernate" Proxy="app/clk001/0/hibernate"/>
+            <BindMap MUri="peripheral/scu/0/clkctrl/0/wdt" Proxy="app/clk001/0/wdt"/>
+            <BindMap MUri="peripheral/scu/0/rstctrl/0/dmareset/1" Proxy="app/reset001/0/dmareset1"/>
+            <BindMap MUri="port/p/5/pad/0" Proxy="app/i2c001/0/i2c_sda"/>
+            <BindMap MUri="peripheral/scu/0/clkctrl/0/extclk" Proxy="app/clk001/0/rgextclk"/>
+            <BindMap MUri="peripheral/scu/0/rstctrl/0/dmareset/0" Proxy="app/reset001/0/dmareset0"/>
+            <BindMap MUri="peripheral/scu/0/rstctrl/0/vadcreset" Proxy="app/reset001/0/vadcreset"/>
+            <BindMap MUri="peripheral/usic/2/channel/0" Proxy="app/i2c001/0/channel"/>
+            <BindMap MUri="peripheral/scu/0/rstctrl/0/fcereset" Proxy="app/reset001/0/fcereset"/>
+            <BindMap MUri="peripheral/scu/0/rstctrl/0/eru1reset" Proxy="app/reset001/0/eru1reset"/>
+            <BindMap MUri="peripheral/scu/0/rstctrl/0/ccu4reset/0" Proxy="app/reset001/0/ccu4reset0"/>
+            <BindMap MUri="peripheral/scu/0/clkctrl/0/ebu" Proxy="app/clk001/0/ebu"/>
+            <BindMap MUri="peripheral/scu/0/rstctrl/0/ccu4reset/1" Proxy="app/reset001/0/ccu4reset1"/>
+        </SolverBndMap>
+    </Solver>
+</ProjectConfig>

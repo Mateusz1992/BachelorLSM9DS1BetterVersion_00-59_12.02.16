@@ -1,0 +1,213 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m4
+   3              		.eabi_attribute 27, 3
+   4              		.fpu fpv4-sp-d16
+   5              		.eabi_attribute 20, 1
+   6              		.eabi_attribute 21, 1
+   7              		.eabi_attribute 23, 3
+   8              		.eabi_attribute 24, 1
+   9              		.eabi_attribute 25, 1
+  10              		.eabi_attribute 26, 1
+  11              		.eabi_attribute 30, 6
+  12              		.eabi_attribute 34, 1
+  13              		.eabi_attribute 18, 4
+  14              		.thumb
+  15              		.file	"Timer.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.makeTimer,"ax",%progbits
+  20              		.align	2
+  21              		.global	makeTimer
+  22              		.thumb
+  23              		.thumb_func
+  25              	makeTimer:
+  26              	.LFB117:
+  27              		.file 1 "../Timer.c"
+   1:../Timer.c    **** /*
+   2:../Timer.c    ****  * Timer.c
+   3:../Timer.c    ****  *
+   4:../Timer.c    ****  *  Created on: 09-02-2016
+   5:../Timer.c    ****  *      Author: Mateusz
+   6:../Timer.c    ****  */
+   7:../Timer.c    **** 
+   8:../Timer.c    **** #include "Timer.h"
+   9:../Timer.c    **** 
+  10:../Timer.c    **** void makeTimer(uint32_t period, SYSTM001_TimerType TimerType, SYSTM001_TimerCallBackPtr TimerCallBa
+  11:../Timer.c    **** {
+  28              		.loc 1 11 0
+  29              		.cfi_startproc
+  30              		@ args = 8, pretend = 0, frame = 16
+  31              		@ frame_needed = 1, uses_anonymous_args = 0
+  32 0000 80B5     		push	{r7, lr}
+  33              	.LCFI0:
+  34              		.cfi_def_cfa_offset 8
+  35              		.cfi_offset 7, -8
+  36              		.cfi_offset 14, -4
+  37 0002 84B0     		sub	sp, sp, #16
+  38              	.LCFI1:
+  39              		.cfi_def_cfa_offset 24
+  40 0004 00AF     		add	r7, sp, #0
+  41              	.LCFI2:
+  42              		.cfi_def_cfa_register 7
+  43 0006 F860     		str	r0, [r7, #12]
+  44 0008 7A60     		str	r2, [r7, #4]
+  45 000a 3B60     		str	r3, [r7, #0]
+  46 000c 0B46     		mov	r3, r1
+  47 000e FB72     		strb	r3, [r7, #11]
+  12:../Timer.c    **** 	*timerID = SYSTM001_CreateTimer(period,TimerType,TimerCallBack, pCallBackArgPtr);
+  48              		.loc 1 12 0
+  49 0010 FB7A     		ldrb	r3, [r7, #11]	@ zero_extendqisi2
+  50 0012 F868     		ldr	r0, [r7, #12]
+  51 0014 1946     		mov	r1, r3
+  52 0016 7A68     		ldr	r2, [r7, #4]
+  53 0018 3B68     		ldr	r3, [r7, #0]
+  54 001a FFF7FEFF 		bl	SYSTM001_CreateTimer
+  55 001e 0246     		mov	r2, r0
+  56 0020 FB69     		ldr	r3, [r7, #28]
+  57 0022 1A60     		str	r2, [r3, #0]
+  13:../Timer.c    **** 
+  14:../Timer.c    **** 	if(*timerID != 0)
+  58              		.loc 1 14 0
+  59 0024 FB69     		ldr	r3, [r7, #28]
+  60 0026 1B68     		ldr	r3, [r3, #0]
+  61 0028 002B     		cmp	r3, #0
+  62 002a 07D0     		beq	.L1
+  15:../Timer.c    **** 	{
+  16:../Timer.c    **** 		*status = SYSTM001_StartTimer(*timerID);
+  63              		.loc 1 16 0
+  64 002c FB69     		ldr	r3, [r7, #28]
+  65 002e 1B68     		ldr	r3, [r3, #0]
+  66 0030 1846     		mov	r0, r3
+  67 0032 FFF7FEFF 		bl	SYSTM001_StartTimer
+  68 0036 0246     		mov	r2, r0
+  69 0038 BB69     		ldr	r3, [r7, #24]
+  70 003a 1A60     		str	r2, [r3, #0]
+  71              	.L1:
+  17:../Timer.c    **** 	}
+  18:../Timer.c    **** }
+  72              		.loc 1 18 0
+  73 003c 07F11007 		add	r7, r7, #16
+  74 0040 BD46     		mov	sp, r7
+  75 0042 80BD     		pop	{r7, pc}
+  76              		.cfi_endproc
+  77              	.LFE117:
+  79              		.section	.text.removeTimer,"ax",%progbits
+  80              		.align	2
+  81              		.global	removeTimer
+  82              		.thumb
+  83              		.thumb_func
+  85              	removeTimer:
+  86              	.LFB118:
+  19:../Timer.c    **** 
+  20:../Timer.c    **** 
+  21:../Timer.c    **** void removeTimer(uint32_t *status, handle_t *timerID)
+  22:../Timer.c    **** {
+  87              		.loc 1 22 0
+  88              		.cfi_startproc
+  89              		@ args = 0, pretend = 0, frame = 8
+  90              		@ frame_needed = 1, uses_anonymous_args = 0
+  91 0000 80B5     		push	{r7, lr}
+  92              	.LCFI3:
+  93              		.cfi_def_cfa_offset 8
+  94              		.cfi_offset 7, -8
+  95              		.cfi_offset 14, -4
+  96 0002 82B0     		sub	sp, sp, #8
+  97              	.LCFI4:
+  98              		.cfi_def_cfa_offset 16
+  99 0004 00AF     		add	r7, sp, #0
+ 100              	.LCFI5:
+ 101              		.cfi_def_cfa_register 7
+ 102 0006 7860     		str	r0, [r7, #4]
+ 103 0008 3960     		str	r1, [r7, #0]
+  23:../Timer.c    **** 	if(*timerID != 0)
+ 104              		.loc 1 23 0
+ 105 000a 3B68     		ldr	r3, [r7, #0]
+ 106 000c 1B68     		ldr	r3, [r3, #0]
+ 107 000e 002B     		cmp	r3, #0
+ 108 0010 14D0     		beq	.L3
+  24:../Timer.c    **** 	{
+  25:../Timer.c    **** 		*status = SYSTM001_StopTimer(*timerID);
+ 109              		.loc 1 25 0
+ 110 0012 3B68     		ldr	r3, [r7, #0]
+ 111 0014 1B68     		ldr	r3, [r3, #0]
+ 112 0016 1846     		mov	r0, r3
+ 113 0018 FFF7FEFF 		bl	SYSTM001_StopTimer
+ 114 001c 0246     		mov	r2, r0
+ 115 001e 7B68     		ldr	r3, [r7, #4]
+ 116 0020 1A60     		str	r2, [r3, #0]
+  26:../Timer.c    **** 
+  27:../Timer.c    **** 		if(*status == DAVEApp_SUCCESS)
+ 117              		.loc 1 27 0
+ 118 0022 7B68     		ldr	r3, [r7, #4]
+ 119 0024 1B68     		ldr	r3, [r3, #0]
+ 120 0026 002B     		cmp	r3, #0
+ 121 0028 08D1     		bne	.L3
+  28:../Timer.c    **** 		{
+  29:../Timer.c    **** 			SYSTM001_DeleteTimer(*timerID);
+ 122              		.loc 1 29 0
+ 123 002a 3B68     		ldr	r3, [r7, #0]
+ 124 002c 1B68     		ldr	r3, [r3, #0]
+ 125 002e 1846     		mov	r0, r3
+ 126 0030 FFF7FEFF 		bl	SYSTM001_DeleteTimer
+  30:../Timer.c    **** 			*timerID = 0;
+ 127              		.loc 1 30 0
+ 128 0034 3B68     		ldr	r3, [r7, #0]
+ 129 0036 4FF00002 		mov	r2, #0
+ 130 003a 1A60     		str	r2, [r3, #0]
+ 131              	.L3:
+  31:../Timer.c    **** 		}
+  32:../Timer.c    **** 	}
+  33:../Timer.c    **** }
+ 132              		.loc 1 33 0
+ 133 003c 07F10807 		add	r7, r7, #8
+ 134 0040 BD46     		mov	sp, r7
+ 135 0042 80BD     		pop	{r7, pc}
+ 136              		.cfi_endproc
+ 137              	.LFE118:
+ 139              		.text
+ 140              	.Letext0:
+ 141              		.file 2 "c:\\dave-3.1.10\\arm-gcc\\bin\\../lib/gcc/arm-none-eabi/4.7.4/../../../../arm-none-eabi/i
+ 142              		.file 3 "C:\\DAVE3_workspace\\mojWorkspace\\BachelorLSM9DS1\\Dave\\Generated\\inc\\DAVESupport/../
+ 143              		.file 4 "C:\\DAVE3_workspace\\mojWorkspace\\BachelorLSM9DS1\\Dave\\Generated\\inc\\DAVESupport/../
+ 144              		.file 5 "C:\\DAVE-3.1.10\\eclipse\\/../CMSIS/Include/core_cm4.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 Timer.c
+C:\Users\Mateusz\AppData\Local\Temp\cc2dATWf.s:20     .text.makeTimer:00000000 $t
+C:\Users\Mateusz\AppData\Local\Temp\cc2dATWf.s:25     .text.makeTimer:00000000 makeTimer
+C:\Users\Mateusz\AppData\Local\Temp\cc2dATWf.s:80     .text.removeTimer:00000000 $t
+C:\Users\Mateusz\AppData\Local\Temp\cc2dATWf.s:85     .text.removeTimer:00000000 removeTimer
+                     .debug_frame:00000010 $d
+                           .group:00000000 wm4.1.35166846b5321d4273ad8c4248893ac3
+                           .group:00000000 wm4.XMC4500.h.45.215f4b8c79f46c7645c15373868d08c0
+                           .group:00000000 wm4.core_cm4.h.47.41af406cb4cda82c972f112a9cd0a024
+                           .group:00000000 wm4.newlib.h.8.a9901dc52d1357e3e94003403d43f8b5
+                           .group:00000000 wm4.features.h.22.b72b3baab2bb2eab3661375590100b6b
+                           .group:00000000 wm4.config.h.193.5fb8ef056cdff92dec3dee9552839d8c
+                           .group:00000000 wm4._ansi.h.23.7aefdac4826acebbfc9f3822a0aeb14c
+                           .group:00000000 wm4.stdint.h.20.54ad762faa59e3c05491630641c8d8bf
+                           .group:00000000 wm4.core_cmInstr.h.39.3d3d1b4a79aef37532666dc6ee87c6ac
+                           .group:00000000 wm4.core_cm4_simd.h.43.b5d1d38735af6366227b4256d330cf13
+                           .group:00000000 wm4.core_cm4.h.178.e5ef5ce66d198d7f00f9d0076e267c41
+                           .group:00000000 wm4.system_XMC4500.h.29.827f68baa362c84f2abae4ab67dde7c9
+                           .group:00000000 wm4.XMC4500.h.198.8e022f279ff353ed081df898dc7b9cf3
+                           .group:00000000 wm4.stddef.h.40.50cf36416e06376af8a9dca28536f2e4
+                           .group:00000000 wm4.types.h.60.e75c47576398c648cdcf9000ace5e3d8
+                           .group:00000000 wm4.MULTIPLEXER.h.46.4a863fbae1c79f0db26da3ce2dc30d02
+                           .group:00000000 wm4.CCU8PWMLIB.h.74.725ec81203769525cc7a424597055f47
+                           .group:00000000 wm4.MOTORLIB.h.62.951091d95913dd2ff36d761323a1771d
+                           .group:00000000 wm4.DBG001.h.116.d6d9e7459a0faa3905c97c1d2edb339d
+                           .group:00000000 wm4.uc_id.h.35.fa57ecd9f559d2767f56c96da2848c12
+                           .group:00000000 wm4.CLK001_Const.h.50.e5e9c2ddc89f4cc9e7b93e9648fa94e4
+                           .group:00000000 wm4.CLK001_Conf.h.81.82a8db895dc146da001475dd68223522
+                           .group:00000000 wm4.SYSTM001.h.64.6ecb31c49bc3e7691644fdcdfc11b5cd
+                           .group:00000000 wm4.Usic.h.58.a3e6728d1d20f5a5e52f483a06098d7b
+                           .group:00000000 wm4.I2C001.h.97.5277d52889d6c741e048ea45ee1277b5
+                           .group:00000000 wm4.I2C001_Conf.h.58.e471e519f7471a50493b6f4fe912ee0d
+                           .group:00000000 wm4.NVIC002_Conf.h.63.74cd705315f747fa337668af570b2988
+
+UNDEFINED SYMBOLS
+SYSTM001_CreateTimer
+SYSTM001_StartTimer
+SYSTM001_StopTimer
+SYSTM001_DeleteTimer
