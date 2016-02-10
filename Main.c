@@ -10,6 +10,7 @@
 
 #include "LSM9DS1_Driver.h"
 #include "Timer.h"
+#include "FIFO_functions.h"
 
 #define LSM9DS1_M	0x1E // Would be 0x1C if SDO_M is LOW
 #define LSM9DS1_AG	0x6B // Would be 0x6A if SDO_AG is LOW
@@ -123,17 +124,7 @@ void timerHandlerReadByte1(void *T)
 
 	if(readingAllowed == TRUE)
 	{
-		if(USIC1_CH1->PSR_IICMode & (USIC_CH_PSR_IICMode_ERR_Msk | USIC_CH_PSR_IICMode_NACK_Msk))
-		{
-			// Clear error bits
-			USIC1_CH1->PSCR |= 0x3FF;
-			// Flush transmit FIFO buffer
-			USIC1_CH1->TRBSCR |= USIC_CH_TRBSCR_FLUSHTB_Msk;
-			// Modify Transmit Data Valid
-			WR_REG(USIC1_CH1->FMR, USIC_CH_FMR_MTDV_Msk, USIC_CH_FMR_MTDV_Pos, 2);
-		}
-
-		USIC_CH_TypeDef* I2CRegs = I2C001_Handle0.I2CRegs;
+		clearErrorFlags();
 
 		I2C001_DataType data1;
 		data1.Data1.TDF_Type = I2C_TDF_MStart;
@@ -141,7 +132,7 @@ void timerHandlerReadByte1(void *T)
 		data1.Data1.Data = ((adr << 1) | I2C_WRITE);
 		while(!I2C001_WriteData(&I2C001_Handle0,&data1))
 		{
-			USIC_FlushTxFIFO(I2CRegs);
+			flushFIFO();
 		}
 
 		stageOfReading++;
@@ -153,7 +144,7 @@ void timerHandlerReadByte1(void *T)
 		data2.Data1.Data = subAdr;
 		while(!I2C001_WriteData(&I2C001_Handle0,&data2))
 		{
-			USIC_FlushTxFIFO(I2CRegs);
+			flushFIFO();
 		}
 
 		stageOfReading++;
@@ -165,7 +156,7 @@ void timerHandlerReadByte1(void *T)
 		data3.Data1.Data = ((adr1 << 1) | I2C_READ);
 		while(!I2C001_WriteData(&I2C001_Handle0,&data3))
 		{
-			USIC_FlushTxFIFO(I2CRegs);
+			flushFIFO();
 		}
 
 		stageOfReading++;
@@ -176,7 +167,7 @@ void timerHandlerReadByte1(void *T)
 		data4.Data1.Data = ubyteFF;
 		while(!I2C001_WriteData(&I2C001_Handle0,&data4))
 		{
-			USIC_FlushTxFIFO(I2CRegs);
+			flushFIFO();
 		}
 
 		stageOfReading++;
@@ -187,13 +178,12 @@ void timerHandlerReadByte1(void *T)
 		data5.Data1.Data = ubyteFF;
 		while(!I2C001_WriteData(&I2C001_Handle0,&data5))
 		{
-			USIC_FlushTxFIFO(I2CRegs);
+			flushFIFO();
 		}
 
 		stageOfReading++;
 		delay(DELAY);
 
-		int k = 0;
 
 		uint16_t buffer = 0;
 		if(I2C001_ReadData(&I2C001_Handle0,&buffer))
