@@ -21,22 +21,26 @@ void initLSM9DS1(void);
 void timerHandlerReadByte(void *T);
 void timerHandlerReadByte1(void *T);
 
+void receiveByte(uint8_t adr, uint8_t subAdr, uint8_t *buffer);
+
 
 typedef struct
 {
-	uint8_t addressDevice;
-	uint8_t subAddress;
+	uint8_t addressDevice[2];
+	uint8_t subAddress[3];
 }deviceAddress;
 
 typedef struct
 {
-	uint8_t dane[6];
+	uint8_t dane[18];
 	deviceAddress adr;
 }addressAndData;
 
 volatile bool readingAllowed = TRUE;
 
-accel pomiary[20];
+accel pomiary[100];
+accel pomiary1[100];
+
 
 #define DELAY 10000
 
@@ -53,27 +57,29 @@ int main(void)
 	uint32_t Status = SYSTM001_ERROR;
 
 	addressAndData adrAndData;
-	adrAndData.adr.addressDevice = 0x6B;
-	adrAndData.adr.subAddress =  OUT_X_L_XL;
+	adrAndData.adr.addressDevice[0] = 0x6B;
+	adrAndData.adr.addressDevice[1] = 0x1E;
+	adrAndData.adr.subAddress[0] =  OUT_X_L_XL; //subaddres for accel
+	adrAndData.adr.subAddress[1] =  OUT_X_L_G; //sub address for gyroscope
+	adrAndData.adr.subAddress[2] =  OUT_X_L_M;
 
 	initLSM9DS1();
 	calibrate(TRUE);
 
 	//readAccel1();
 	//makeTimer(100, SYSTM001_PERIODIC, timerHandlerReadByte1, &a, &Status, &TimerId);
-	TimerId=SYSTM001_CreateTimer(5,SYSTM001_PERIODIC,timerHandlerReadByte1,&adrAndData);
+	TimerId=SYSTM001_CreateTimer(2,SYSTM001_PERIODIC,timerHandlerReadByte1,&adrAndData);
 	SYSTM001_StartTimer(TimerId);
 	while(1)
 	{
 		if(!readingAllowed)
 		{
 
+			int16_t accelX = (adrAndData.dane[1] << 8) | adrAndData.dane[0]; // Store x-axis values into gx
 
-			int16_t accelX = (a.dane[1] << 8) | a.dane[0]; // Store x-axis values into gx
+			int16_t accelY = (adrAndData.dane[3] << 8) | adrAndData.dane[2]; // Store y-axis values into gy
 
-			int16_t accelY = (a.dane[3] << 8) | a.dane[2]; // Store y-axis values into gy
-
-			int16_t accelZ = (a.dane[5] << 8) | a.dane[4]; // Store z-axis values into gz
+			int16_t accelZ = (adrAndData.dane[5] << 8) | adrAndData.dane[4]; // Store z-axis values into gz
 
 			if (_autoCalc) //kalibracja
 			{
@@ -89,11 +95,29 @@ int main(void)
 			pomiary[counter].ax = accelX;
 			pomiary[counter].ay = accelY;
 			pomiary[counter].az = accelZ;
+
+			int16_t gyroX = (adrAndData.dane[7] << 1) | adrAndData.dane[6];
+			int16_t gyroY = (adrAndData.dane[9] << 1) | adrAndData.dane[8];
+			int16_t gyroZ = (adrAndData.dane[11] << 1) | adrAndData.dane[10];
+
+			if (_autoCalc) //kalibracja
+			{
+				gyroX -= gBiasRaw[X_AXIS];
+				gyroY -= gBiasRaw[Y_AXIS];
+				gyroZ -= gBiasRaw[Z_AXIS];
+			}
+			gyroX = calcGyro(gyroX);
+			gyroY = calcGyro(gyroY);
+			gyroZ = calcGyro(gyroZ);
+
+			pomiary1[counter].ax = gyroX;
+			pomiary1[counter].ay = gyroY;
+			pomiary1[counter].az = gyroZ;
 			counter++;
 			readingAllowed = TRUE;
 		}
 
-		if(counter >= 20)
+		if(counter >= 100)
 		{
 			counter = 0;
 		}
@@ -120,91 +144,130 @@ void timerHandlerReadByte1(void *T)
 {
 	static volatile uint32_t stageOfReading = 0;
 	static uint8_t whichByte = 0;
+	static uint8_t whichDevice = 0;
 	addressAndData *address = (addressAndData*)T;
 
 	if(readingAllowed == TRUE)
 	{
-		clearErrorFlags();
-
-		I2C001_DataType data1;
-		data1.Data1.TDF_Type = I2C_TDF_MStart;
-		uint8_t adr = address->adr.addressDevice;
-		data1.Data1.Data = ((adr << 1) | I2C_WRITE);
-		while(!I2C001_WriteData(&I2C001_Handle0,&data1))
+		if(0 == whichDevice) //accel
 		{
-			flushFIFO();
+			receiveByte(address->adr.addressDevice[0], (address->adr.subAddress[0] + whichByte), &(address->dane[whichByte]));
+			whichByte++;
+
+			if(whichByte == 6)
+			{
+				//readingAllowed = FALSE;
+
+				whichDevice++;
+
+				whichByte = 0;
+				stageOfReading = 0;
+			}
+		}
+		else if(1 == whichDevice) //gyro
+		{
+			receiveByte(address->adr.addressDevice[0], (address->adr.subAddress[1] + whichByte), &(address->dane[whichByte + 6]));
+			whichByte++;
+
+			if(whichByte == 6)
+			{
+				//readingAllowed = FALSE;
+
+				whichDevice++;
+
+				whichByte = 0;
+				stageOfReading++;
+			}
+		}
+		else if(2 == whichDevice)
+		{
+			receiveByte(address->adr.addressDevice[1], (address->adr.subAddress[2] + whichByte), &(address->dane[whichByte + 12]));
+			whichByte++;
+
+			if(whichByte == 6)
+			{
+				readingAllowed = FALSE;
+
+				whichDevice = 0;
+
+				whichByte = 0;
+				stageOfReading++;
+			}
 		}
 
-		stageOfReading++;
-		delay(DELAY);
-
-		I2C001_DataType data2;
-		data2.Data1.TDF_Type = I2C_TDF_MTxData;
-		uint8_t subAdr = (address->adr.subAddress + whichByte);
-		data2.Data1.Data = subAdr;
-		while(!I2C001_WriteData(&I2C001_Handle0,&data2))
-		{
-			flushFIFO();
-		}
-
-		stageOfReading++;
-		delay(DELAY);
-
-		I2C001_DataType data3;
-		data3.Data1.TDF_Type = I2C_TDF_MRStart;
-		uint8_t adr1 = address->adr.addressDevice;
-		data3.Data1.Data = ((adr1 << 1) | I2C_READ);
-		while(!I2C001_WriteData(&I2C001_Handle0,&data3))
-		{
-			flushFIFO();
-		}
-
-		stageOfReading++;
-		delay(DELAY);
-
-		I2C001_DataType data4;
-		data4.Data1.TDF_Type = I2C_TDF_MRxAck1;
-		data4.Data1.Data = ubyteFF;
-		while(!I2C001_WriteData(&I2C001_Handle0,&data4))
-		{
-			flushFIFO();
-		}
-
-		stageOfReading++;
-		delay(DELAY);
-
-		I2C001_DataType data5;
-		data5.Data1.TDF_Type = I2C_TDF_MStop;
-		data5.Data1.Data = ubyteFF;
-		while(!I2C001_WriteData(&I2C001_Handle0,&data5))
-		{
-			flushFIFO();
-		}
-
-		stageOfReading++;
-		delay(DELAY);
-
-
-		uint16_t buffer = 0;
-		if(I2C001_ReadData(&I2C001_Handle0,&buffer))
-		{
-			k++;
-		}
-		else
-		{
-			k--;
-		}
-		delay(DELAY);
-		address->dane[whichByte] = (uint8_t)buffer;
-		stageOfReading = 0;
-		whichByte++;
-
-		if(whichByte == 6)
-		{
-			readingAllowed = FALSE;
-
-			whichByte = 0;
-			stageOfReading = 0;
-		}
 	}
+}
+
+
+void receiveByte(uint8_t adr, uint8_t subAdr, uint8_t *buffer)
+{
+	clearErrorFlags();
+
+	I2C001_DataType data1;
+	data1.Data1.TDF_Type = I2C_TDF_MStart;
+
+	data1.Data1.Data = ((adr << 1) | I2C_WRITE);
+	while(!I2C001_WriteData(&I2C001_Handle0,&data1))
+	{
+		flushFIFO();
+	}
+
+	delay(DELAY);
+
+	I2C001_DataType data2;
+	data2.Data1.TDF_Type = I2C_TDF_MTxData;
+
+	data2.Data1.Data = subAdr;
+	while(!I2C001_WriteData(&I2C001_Handle0,&data2))
+	{
+		flushFIFO();
+	}
+
+	delay(DELAY);
+
+	I2C001_DataType data3;
+	data3.Data1.TDF_Type = I2C_TDF_MRStart;
+	//uint8_t adr1 = address->adr.addressDevice;
+	data3.Data1.Data = ((adr << 1) | I2C_READ);
+	while(!I2C001_WriteData(&I2C001_Handle0,&data3))
+	{
+		flushFIFO();
+	}
+
+	delay(DELAY);
+
+	I2C001_DataType data4;
+	data4.Data1.TDF_Type = I2C_TDF_MRxAck1;
+	data4.Data1.Data = ubyteFF;
+	while(!I2C001_WriteData(&I2C001_Handle0,&data4))
+	{
+		flushFIFO();
+	}
+
+	delay(DELAY);
+
+	I2C001_DataType data5;
+	data5.Data1.TDF_Type = I2C_TDF_MStop;
+	data5.Data1.Data = ubyteFF;
+	while(!I2C001_WriteData(&I2C001_Handle0,&data5))
+	{
+		flushFIFO();
+	}
+
+	delay(DELAY);
+
+	int k = 0;
+	uint16_t bufferToRead = 0;
+	if(I2C001_ReadData(&I2C001_Handle0,&bufferToRead))
+	{
+		k++;
+	}
+	else
+	{
+		k--;
+	}
+
+	delay(DELAY);
+	*buffer = (uint8_t)bufferToRead;
+
 }
