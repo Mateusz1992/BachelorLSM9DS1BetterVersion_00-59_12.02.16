@@ -239,4 +239,16 @@ struct IMUSettings
 	struct temperatureSettings temp;
 };
 
+typedef struct
+{
+	uint8_t addressDevice[2];
+	uint8_t subAddress[3];
+}deviceAddress;
+
+typedef struct
+{
+	uint8_t dane[18];
+	deviceAddress adr;
+}addressAndData;
+
 #endif /* LSM9DS1_TYPES_H_ */

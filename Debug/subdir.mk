@@ -4,16 +4,19 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
+../FIFO_functions.c \
 ../LSM9DS1_Driver.c \
 ../Main.c \
 ../Timer.c 
 
 OBJS += \
+./FIFO_functions.o \
 ./LSM9DS1_Driver.o \
 ./Main.o \
 ./Timer.o 
 
 C_DEPS += \
+./FIFO_functions.d \
 ./LSM9DS1_Driver.d \
 ./Main.d \
 ./Timer.d 

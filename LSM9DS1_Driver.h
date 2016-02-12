@@ -90,6 +90,14 @@ typedef enum {
 
 
 void myDelay(volatile unsigned int delay);
+
+void startMeasurements(void);
+
+void readAndSendMeasurements(void (*sendFunction)(char *str));
+
+void initAdrAndSubAdr(void);
+
+void initLSM9DS1(void);
 // init() -- Sets up gyro, accel, and mag settings to default.
 // - interface - Sets the interface mode (IMU_MODE_I2C or IMU_MODE_SPI)
 // - xgAddr - Sets either the I2C address of the accel/gyro or SPI chip
@@ -493,5 +501,9 @@ void SPIreadBytes(uint8_t csPin, uint8_t subAddress, uint8_t * dest, uint8_t cou
 void mReadBytes(uint8_t subAddress, uint8_t * dest, uint8_t count);
 
 void timerHandlerReadByte(void *T);
+
+void timerHandlerReceiveOneMeasurementEachSensor(void *T);
+
+void receiveByte(uint8_t adr, uint8_t subAdr, uint8_t *buffer);
 
 #endif /* LSM9DS1_DRIVERS_H_ */
